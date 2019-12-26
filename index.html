@@ -69,8 +69,27 @@
 	<script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
-  $(function () {
-  var socket = io();
+  $(document).ready(function () {
+    var socket = io();
+    let typing = false;
+    var timeOut = undefined;
+
+    function timeOutFunction(){
+      typing = false;
+      socket.emit("no longer typing", {typing});
+    } 
+
+    $('#m').keydown((e) => {
+      if(e.which != 13){
+        typing = true;
+        socket.emit("typing message", {typing});
+        timeOut = setTimeout(timeOutFunction, 2500);
+      }else{
+        clearTimeout(timeOut);
+        timeOut = setTimeout(timeOutFunction, 2500);
+      }
+    })
+
     $('#form2').hide();
 
     $('#form1').submit(function(e){
@@ -87,14 +106,23 @@
       $('#messages').append($('<li>').text(`You: ${$('#m').val()}`));
       $('#m').val('');
       return false;
-	});
+  });
+  
 	socket.on('chat message', (obj) => {
 		$('#messages').append($('<li>').text(`${obj.name}: ${obj.chat}`));
 	})
 
 	socket.on('disconnection message', (msg) => {
 		$('#messages').append($("<li>").text(msg.msg))
-	})
+  })
+  
+  socket.on("typing message", (isTyping) => {
+      $('h1').text(`${isTyping.name} is typing`)
+  })
+
+  socket.on("no longer typing", (isTyping) => {
+      $('h1').text("THE CHAT ROOM");
+  })
   });
 </script>
   </body>

@@ -5,11 +5,26 @@ const io = require('socket.io')(http);
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
 
+const users = [];
+
+
 io.on('connection', function (socket) {
     socket.on('send-nickname', (name) => { 
         socket.nickname = name;
+        users.push(socket.nickname)
         console.log(socket.nickname);
     })
+
+    socket.on("typing message", (isTyping) => { 
+        console.log(isTyping);
+        socket.broadcast.emit("typing message", { name: socket.nickname , isTyping });
+    })
+
+    socket.on("no longer typing", (isTyping) => { 
+        console.log(isTyping);
+        socket.broadcast.emit("no longer typing", { name: socket.nickname, isTyping: !isTyping });
+    })
+
     console.log('a user connected');
     socket.on('disconnect', function() {
         io.emit('disconnection message', { msg: `${socket.nickname  } just got disconnect` });
