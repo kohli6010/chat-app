@@ -3,7 +3,9 @@
   <head>
     <title>Socket.IO chat</title>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      * { 
+        margin: 0; padding: 0; box-sizing: border-box; 
+        }
       body { font: 13px Helvetica, Arial; }
       form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
       form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
@@ -83,10 +85,11 @@
       if(e.which != 13){
         typing = true;
         socket.emit("typing message", {typing});
-        timeOut = setTimeout(timeOutFunction, 2500);
+        timeOut = setTimeout(timeOutFunction, 3000);
+        clearTimeout(timeOut);
       }else{
         clearTimeout(timeOut);
-        timeOut = setTimeout(timeOutFunction, 2500);
+        timeOut = setTimeout(timeOutFunction, 0);
       }
     })
 
@@ -110,7 +113,17 @@
   
 	socket.on('chat message', (obj) => {
 		$('#messages').append($('<li>').text(`${obj.name}: ${obj.chat}`));
-	})
+      $('h1').text('THE CHAT ROOM')
+    })
+
+    socket.on("name-available", (obj) => {
+      if(obj.available){
+        $('#form1').show();
+      $('#form2').hide();
+      $('div').text("Choose a different name");
+      $('#name').val('')
+      }
+    })
 
 	socket.on('disconnection message', (msg) => {
 		$('#messages').append($("<li>").text(msg.msg))

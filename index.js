@@ -10,9 +10,13 @@ const users = [];
 
 io.on('connection', function (socket) {
     socket.on('send-nickname', (name) => { 
-        socket.nickname = name;
-        users.push(socket.nickname)
-        console.log(socket.nickname);
+        if (users.includes(name)) {
+            socket.emit("name-available", { available: true });
+        } else { 
+            socket.nickname = name;
+            users.push(socket.nickname);
+            console.log(users);
+        }
     })
 
     socket.on("typing message", (isTyping) => { 
