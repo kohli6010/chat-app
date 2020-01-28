@@ -60,6 +60,7 @@
   </head>
   <body>
     <h1>THE CHAT ROOM</h1>
+    <div class="online"></div>
     <ul id="messages"></ul>
     <form action="" id="form1">
       <div>Enter a nickname</div>
@@ -135,6 +136,10 @@
 
   socket.on("no longer typing", (isTyping) => {
       $('h1').text("THE CHAT ROOM");
+  })
+
+  socket.on("online", (obj) => {
+    $('.online').text(`Online: ${obj.users.map(user => user)}`);
   })
   });
 </script>
